@@ -1,0 +1,4 @@
+local NotificationLibrary = require(script.Parent:WaitForChild("NotificationLibrary")) -- Ajuste le chemin selon l'emplacement de ton module
+
+-- Exemple d'utilisation de la notification
+NotificationLibrary:NewNotification("Notification Title", "This is an example notification text.", 5) -- Affiche la notification pendant 5 secondes
