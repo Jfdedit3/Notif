@@ -22,7 +22,11 @@ function NotificationLibrary:NewNotification(title, text, duration)
 
     -- Animation d'entrée
     notificationFrame.Position = UDim2.new(0.5, -150, 0, -100) -- Position initiale hors de l'écran
-    notificationFrame:TweenPosition(UDim2.new(0.5, -150, 0, 50), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true)
+    notificationFrame:TweenPosition(UDim2.new(0.5, -150, 0, 50), Enum.EasingDirection.Out, Enum.EasingStyle.Bounce, 0.5, true)
+    
+    -- Animation de fondu
+    notificationFrame.BackgroundTransparency = 1
+    notificationFrame:TweenBackgroundTransparency(0, Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true)
 
     -- Titre de la notification
     local titleLabel = Instance.new("TextLabel")
@@ -47,7 +51,10 @@ function NotificationLibrary:NewNotification(title, text, duration)
 
     -- Animation de disparition
     wait(duration) -- Attend la durée spécifiée
-    notificationFrame:TweenPosition(UDim2.new(0.5, -150, 0, -100), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true, function()
+
+    -- Animation de sortie avec fondu
+    notificationFrame:TweenPosition(UDim2.new(0.5, -150, 0, -100), Enum.EasingDirection.Out, Enum.EasingStyle.Bounce, 0.5, true)
+    notificationFrame:TweenBackgroundTransparency(1, Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true, function()
         gui:Destroy() -- Détruire le GUI après la durée
     end)
 end
