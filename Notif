@@ -1,5 +1,20 @@
--- Charger la bibliothèque de notifications depuis l'URL
-local NotificationLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/Jfdedit3/Notif/refs/heads/main/Main.lua"))()
+-- Charger la bibliothèque de GUI depuis l'URL
+local GUILibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/Jfdedit3/Notif/refs/heads/main/Main.lua"))()
 
--- Exemple d'utilisation
-NotificationLibrary:NewNotification("Bienvenue!", "Vous avez un nouveau message.", 5) -- Affiche pendant 5 secondes
+-- Créer le GUI
+local myGui = GUILibrary:CreateGUI("MyCoolGUI")
+
+-- Créer un cadre (Frame)
+local myFrame = GUILibrary:CreateFrame(myGui, UDim2.new(0, 400, 0, 300), UDim2.new(0.5, -200, 0.5, -150))
+
+-- Appliquer des coins arrondis au cadre
+GUILibrary:ApplyCorners(myFrame, 12)
+
+-- Créer un bouton dans le cadre
+local myButton = GUILibrary:CreateButton(myFrame, "Click Me", UDim2.new(0, 150, 0, 50), UDim2.new(0.5, -75, 0.7, -25))
+
+-- Ajouter un label (TextLabel)
+local myLabel = GUILibrary:CreateLabel(myFrame, "Welcome to the GUI!", UDim2.new(0, 300, 0, 50), UDim2.new(0.5, -150, 0.2, -25))
+
+-- Ajouter une animation à un élément (Tween)
+GUILibrary:TweenObject(myFrame, UDim2.new(0.5, -200, 0.5, -150), 1)
