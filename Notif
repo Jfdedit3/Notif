@@ -1,20 +1,10 @@
--- Charger la bibliothèque de GUI depuis l'URL
+-- Charger la bibliothèque depuis l'URL
 local GUILibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/Jfdedit3/Notif/refs/heads/main/Main.lua"))()
 
--- Créer le GUI
-local myGui = GUILibrary:CreateGUI("MyCoolGUI")
-
--- Créer un cadre (Frame)
-local myFrame = GUILibrary:CreateFrame(myGui, UDim2.new(0, 400, 0, 300), UDim2.new(0.5, -200, 0.5, -150))
-
--- Appliquer des coins arrondis au cadre
-GUILibrary:ApplyCorners(myFrame, 12)
-
--- Créer un bouton dans le cadre
-local myButton = GUILibrary:CreateButton(myFrame, "Click Me", UDim2.new(0, 150, 0, 50), UDim2.new(0.5, -75, 0.7, -25))
-
--- Ajouter un label (TextLabel)
-local myLabel = GUILibrary:CreateLabel(myFrame, "Welcome to the GUI!", UDim2.new(0, 300, 0, 50), UDim2.new(0.5, -150, 0.2, -25))
-
--- Ajouter une animation à un élément (Tween)
-GUILibrary:TweenObject(myFrame, UDim2.new(0.5, -200, 0.5, -150), 1)
+-- Vérifier si la fonction CreateGUI existe dans la bibliothèque chargée
+if GUILibrary and GUILibrary.CreateGUI then
+    -- Créer le GUI en utilisant la bibliothèque
+    local myGui = GUILibrary:CreateGUI("MyCoolGUI")
+else
+    warn("La fonction CreateGUI n'existe pas dans cette bibliothèque !")
+end
