@@ -1,57 +1,62 @@
-local NotificationLibrary = {}
-NotificationLibrary.__index = NotificationLibrary
+local GUILibrary = {}
+GUILibrary.__index = GUILibrary
 
--- Fonction pour créer une nouvelle notification
-function NotificationLibrary:NewNotification(title, message, duration)
-    -- Créer le GUI
+-- Fonction pour créer un GUI (ScreenGui)
+function GUILibrary:CreateGUI(guiName)
     local screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "NotificationGui"
+    screenGui.Name = guiName or "CustomGUI"
     screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-
-    -- Cadre de la notification
-    local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 300, 0, 100)
-    frame.Position = UDim2.new(0.5, -150, 0, -120) -- Apparition hors écran
-    frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    frame.Parent = screenGui
-
-    -- Arrondir les coins
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 12)
-    corner.Parent = frame
-
-    -- Titre
-    local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(1, 0, 0, 40)
-    titleLabel.Position = UDim2.new(0, 0, 0, 0)
-    titleLabel.BackgroundTransparency = 1
-    titleLabel.Text = title
-    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.TextSize = 20
-    titleLabel.Parent = frame
-
-    -- Message
-    local messageLabel = Instance.new("TextLabel")
-    messageLabel.Size = UDim2.new(1, 0, 0, 60)
-    messageLabel.Position = UDim2.new(0, 0, 0, 40)
-    messageLabel.BackgroundTransparency = 1
-    messageLabel.Text = message
-    messageLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-    messageLabel.Font = Enum.Font.Gotham
-    messageLabel.TextSize = 16
-    messageLabel.Parent = frame
-
-    -- Animation d'entrée (Tween)
-    frame:TweenPosition(UDim2.new(0.5, -150, 0, 50), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true)
-
-    -- Fermeture après la durée spécifiée
-    wait(duration)
-
-    -- Animation de disparition
-    frame:TweenPosition(UDim2.new(0.5, -150, 0, -120), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true, function()
-        screenGui:Destroy() -- Supprime la notification après la disparition
-    end)
+    return screenGui
 end
 
-return NotificationLibrary
+-- Fonction pour créer un cadre (Frame)
+function GUILibrary:CreateFrame(parent, size, position, bgColor)
+    local frame = Instance.new("Frame")
+    frame.Size = size or UDim2.new(0, 300, 0, 200)
+    frame.Position = position or UDim2.new(0.5, -150, 0.5, -100)
+    frame.BackgroundColor3 = bgColor or Color3.fromRGB(40, 40, 40)
+    frame.Parent = parent
+    return frame
+end
+
+-- Fonction pour arrondir les coins d'un élément
+function GUILibrary:ApplyCorners(instance, cornerRadius)
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, cornerRadius or 12)
+    corner.Parent = instance
+end
+
+-- Fonction pour créer un bouton (TextButton)
+function GUILibrary:CreateButton(parent, text, size, position, bgColor, textColor)
+    local button = Instance.new("TextButton")
+    button.Size = size or UDim2.new(0, 100, 0, 50)
+    button.Position = position or UDim2.new(0.5, -50, 0.5, -25)
+    button.BackgroundColor3 = bgColor or Color3.fromRGB(0, 170, 255)
+    button.Text = text or "Button"
+    button.TextColor3 = textColor or Color3.fromRGB(255, 255, 255)
+    button.Font = Enum.Font.GothamBold
+    button.TextSize = 14
+    button.Parent = parent
+    return button
+end
+
+-- Fonction pour créer un label (TextLabel)
+function GUILibrary:CreateLabel(parent, text, size, position, textColor)
+    local label = Instance.new("TextLabel")
+    label.Size = size or UDim2.new(0, 200, 0, 50)
+    label.Position = position or UDim2.new(0.5, -100, 0.5, -25)
+    label.BackgroundTransparency = 1
+    label.Text = text or "Label"
+    label.TextColor3 = textColor or Color3.fromRGB(255, 255, 255)
+    label.Font = Enum.Font.Gotham
+    label.TextSize = 14
+    label.Parent = parent
+    return label
+end
+
+-- Fonction pour ajouter des animations à un élément (Tween)
+function GUILibrary:TweenObject(instance, targetPosition, duration)
+    instance:TweenPosition(targetPosition, Enum.EasingDirection.Out, Enum.EasingStyle.Quad, duration or 0.5, true)
+end
+
+return GUILibrary
