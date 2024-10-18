@@ -1,4 +1,5 @@
-local NotificationLibrary = require(script.Parent:WaitForChild("NotificationLibrary")) -- Ajuste le chemin selon l'emplacement de ton module
+-- Charger la bibliothèque de notifications depuis l'URL
+local NotificationLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/Jfdedit3/Notif/refs/heads/main/Main.lua"))()
 
--- Exemple d'utilisation de la notification
-NotificationLibrary:NewNotification("Notification Title", "This is an example notification text.", 5) -- Affiche la notification pendant 5 secondes
+-- Exemple d'utilisation
+NotificationLibrary:NewNotification("Bienvenue!", "Vous avez un nouveau message.", 5) -- Affiche pendant 5 secondes
