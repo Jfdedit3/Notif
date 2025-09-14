@@ -1,28 +1,21 @@
--- ================================
--- NotificationLibrary - Version Améliorée
--- ================================
+-- NotificationLibrary - Version Corrigée
 local NotificationLibrary = {}
 NotificationLibrary.__index = NotificationLibrary
 
--- Configuration
 NotificationLibrary.config = {
     defaultDuration = 4,
     maxWidth = 350,
     minHeight = 80,
     animationSpeed = 0.3,
     maxNotifications = 5,
-    position = "topRight" -- topRight, topLeft, bottomRight, bottomLeft
+    position = "topRight"
 }
 
--- Stockage des notifications actives
 NotificationLibrary.activeNotifications = {}
-NotificationLibrary.notificationCounter = 0
 
--- Fonction pour créer une nouvelle notification
 function NotificationLibrary:NewNotification(title, message, duration, type)
     -- Vérifier la limite de notifications
     if #self.activeNotifications >= self.config.maxNotifications then
-        -- Retirer la plus ancienne
         local oldest = table.remove(self.activeNotifications, 1)
         if oldest.gui and oldest.gui.Parent then
             oldest.gui:Destroy()
@@ -34,24 +27,21 @@ function NotificationLibrary:NewNotification(title, message, duration, type)
 
     -- Créer le ScreenGui
     local screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "RTRIX_Notification_" .. tostring(self.notificationCounter)
+    screenGui.Name = "RTRIX_Notification_" .. tostring(os.time())
     screenGui.ResetOnSpawn = false
     screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     
     local playerGui = game.Players.LocalPlayer:FindFirstChild("PlayerGui")
-    if not playerGui then
-        warn("PlayerGui non trouvé")
-        return
-    end
+    if not playerGui then return end
     screenGui.Parent = playerGui
 
-    -- Cadre principal
+    -- Cadre principal (transparent)
     local frame = Instance.new("Frame")
     frame.Size = UDim2.new(0, self.config.maxWidth, 0, self.config.minHeight)
     frame.BackgroundTransparency = 1
     frame.Parent = screenGui
 
-    -- Container avec fond
+    -- Container avec fond coloré
     local container = Instance.new("Frame")
     container.Size = UDim2.new(1, 0, 1, 0)
     container.BackgroundColor3 = self:GetBackgroundColor(type)
@@ -62,19 +52,6 @@ function NotificationLibrary:NewNotification(title, message, duration, type)
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(0, 12)
     corner.Parent = container
-
-    -- Ombre subtile
-    local shadow = Instance.new("Frame")
-    shadow.Size = UDim2.new(1, 4, 1, 4)
-    shadow.Position = UDim2.new(0, -2, 0, -2)
-    shadow.BackgroundColor3 = Color3.new(0, 0, 0)
-    shadow.BackgroundTransparency = 0.8
-    shadow.ZIndex = -1
-    shadow.Parent = container
-
-    local shadowCorner = Instance.new("UICorner")
-    shadowCorner.CornerRadius = UDim.new(0, 14)
-    shadowCorner.Parent = shadow
 
     -- Layout principal
     local layout = Instance.new("UIListLayout")
@@ -127,29 +104,13 @@ function NotificationLibrary:NewNotification(title, message, duration, type)
     messageLabel.Size = UDim2.new(1, 0, 0, messageSize.Y)
     frame.Size = UDim2.new(0, self.config.maxWidth, 0, math.max(self.config.minHeight, 40 + messageSize.Y + 32))
 
-    -- Bouton de fermeture
-    local closeButton = Instance.new("TextButton")
-    closeButton.Size = UDim2.new(0, 20, 0, 20)
-    closeButton.Position = UDim2.new(1, -30, 0, 10)
-    closeButton.Text = "✕"
-    closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    closeButton.Font = Enum.Font.GothamBold
-    closeButton.TextSize = 16
-    closeButton.BackgroundTransparency = 0.7
-    closeButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    closeButton.Parent = container
-
-    local closeCorner = Instance.new("UICorner")
-    closeCorner.CornerRadius = UDim.new(0, 10)
-    closeCorner.Parent = closeButton
-
     -- Position initiale selon la configuration
     local startPosition, endPosition = self:GetNotificationPositions()
     frame.Position = startPosition
 
     -- Stocker la notification
     local notification = {
-        id = self.notificationCounter,
+        id = os.time(),
         gui = screenGui,
         frame = frame,
         container = container,
@@ -159,18 +120,12 @@ function NotificationLibrary:NewNotification(title, message, duration, type)
     }
     
     table.insert(self.activeNotifications, notification)
-    self.notificationCounter = self.notificationCounter + 1
 
     -- Animation d'entrée
     frame:TweenPosition(endPosition, Enum.EasingDirection.Out, Enum.EasingStyle.Quad, self.config.animationSpeed, true)
 
     -- Son de notification
     self:PlayNotificationSound(type)
-
-    -- Fermeture par bouton
-    closeButton.MouseButton1Click:Connect(function()
-        self:CloseNotification(notification)
-    end)
 
     -- Fermeture automatique
     spawn(function()
@@ -181,20 +136,17 @@ function NotificationLibrary:NewNotification(title, message, duration, type)
     return notification
 end
 
--- Fonction pour fermer une notification
 function NotificationLibrary:CloseNotification(notification)
     if not notification or not notification.gui or not notification.gui.Parent then
         return
     end
 
-    -- Animation de sortie
     local startPosition, endPosition = self:GetNotificationPositions()
     notification.frame:TweenPosition(startPosition, Enum.EasingDirection.In, Enum.EasingStyle.Quad, self.config.animationSpeed, true, function()
         if notification.gui and notification.gui.Parent then
             notification.gui:Destroy()
         end
         
-        -- Retirer de la liste active
         for i, notif in ipairs(self.activeNotifications) do
             if notif.id == notification.id then
                 table.remove(self.activeNotifications, i)
@@ -204,7 +156,6 @@ function NotificationLibrary:CloseNotification(notification)
     end)
 end
 
--- Fonction pour obtenir les positions de notification
 function NotificationLibrary:GetNotificationPositions()
     local positions = {
         topRight = {
@@ -229,7 +180,6 @@ function NotificationLibrary:GetNotificationPositions()
     return pos.start, pos.endPos
 end
 
--- Fonction pour obtenir la couleur du fond
 function NotificationLibrary:GetBackgroundColor(type)
     local colors = {
         success = Color3.fromRGB(46, 204, 113),   -- Vert
@@ -242,22 +192,18 @@ function NotificationLibrary:GetBackgroundColor(type)
     return colors[type] or colors.default
 end
 
--- Fonction pour jouer un son de notification
 function NotificationLibrary:PlayNotificationSound(type)
     local soundIds = {
-        success = "rbxassetid://6578421743",  -- Son de succès
-        warning = "rbxassetid://6578421743",  -- Son d'avertissement
-        error = "rbxassetid://6578421743",    -- Son d'erreur
-        info = "rbxassetid://6578421743",     -- Son d'info
-        default = "rbxassetid://6578421743"   -- Son par défaut
+        success = "rbxassetid://6578421743",
+        warning = "rbxassetid://6578421743",
+        error = "rbxassetid://6578421743",
+        info = "rbxassetid://6578421743",
+        default = "rbxassetid://6578421743"
     }
 
-    -- Si aucun son n'est disponible, on utilise un son système de base
-    local soundId = soundIds[type] or soundIds.default
-    
     spawn(function()
         local sound = Instance.new("Sound")
-        sound.SoundId = soundId
+        sound.SoundId = soundIds[type] or soundIds.default
         sound.Volume = 0.3
         sound.Parent = game.Players.LocalPlayer:FindFirstChild("PlayerGui") or game.Players.LocalPlayer
         
@@ -267,7 +213,6 @@ function NotificationLibrary:PlayNotificationSound(type)
     end)
 end
 
--- Fonctions de raccourci pour différents types de notifications
 function NotificationLibrary:Success(title, message, duration)
     return self:NewNotification(title, message, duration, "success")
 end
@@ -284,7 +229,6 @@ function NotificationLibrary:Info(title, message, duration)
     return self:NewNotification(title, message, duration, "info")
 end
 
--- Fonction pour fermer toutes les notifications
 function NotificationLibrary:CloseAll()
     for i = #self.activeNotifications, 1, -1 do
         local notification = self.activeNotifications[i]
@@ -292,7 +236,6 @@ function NotificationLibrary:CloseAll()
     end
 end
 
--- Fonction pour changer la position des notifications
 function NotificationLibrary:SetPosition(position)
     if position == "topRight" or position == "topLeft" or position == "bottomRight" or position == "bottomLeft" then
         self.config.position = position
